@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Catch the Tigers 🐯</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+      background: linear-gradient(#fff5e6, #ffe0cc);
+    }
+    #gameCanvas {
+      display: block;
+      margin: 0 auto;
+      background-color: #fff;
+      border: 3px solid #ff9900;
+    }
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      color: #ff6600;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="400" height="600"></canvas>
+  <div id="score">Score: 0</div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let player = { x: 180, y: 550, width: 40, height: 20 };
+    let tigers = [];
+    let score = 0;
+
+    function drawPlayer() {
+      ctx.fillStyle = "#ff9933";
+      ctx.fillRect(player.x, player.y, player.width, player.height);
+    }
+
+    function drawTiger(x, y) {
+      ctx.font = "28px serif";
+      ctx.fillText("🐯", x, y);
+    }
+
+    function spawnTiger() {
+      tigers.push({ x: Math.random() * 360 + 10, y: 0 });
+    }
+
+    function updateGame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawPlayer();
+
+      tigers.forEach((tiger, i) => {
+        tiger.y += 2;
+        drawTiger(tiger.x, tiger.y);
+
+        // Collision detection
+        if (
+          tiger.x > player.x &&
+          tiger.x < player.x + player.width &&
+          tiger.y > player.y &&
+          tiger.y < player.y + player.height
+        ) {
+          tigers.splice(i, 1);
+          score++;
+          document.getElementById("score").textContent = "Score: " + score;
+
+          if (score === 10) {
+            setTimeout(() => {
+              alert("You caught all the tigers! 🐯❤️\nYou're my wildest love!");
+            }, 100);
+          }
+        }
+      });
+
+      requestAnimationFrame(updateGame);
+    }
+
+    // Move player
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft" && player.x > 0) player.x -= 20;
+      if (e.key === "ArrowRight" && player.x + player.width < canvas.width) player.x += 20;
+    });
+
+    setInterval(spawnTiger, 800);
+    updateGame();
+  </script>
+</body>
+</html>
